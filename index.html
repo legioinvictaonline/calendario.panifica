@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Calendario Panifica">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Calendario Panifica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #faf9f7; color: #2a2a2a; padding: 20px; min-height: 100vh;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #e0ddd8; }
+  header h1 { font-weight: 300; font-size: 1.6em; letter-spacing: 0.05em; color: #8a7a60; }
+  header p { font-size: 0.85em; color: #999; margin-top: 6px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 28px; font-size: 0.8em; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .week-label { font-size: 0.75em; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8a7a60; margin: 24px 0 12px 0; padding-bottom: 6px; border-bottom: 1px solid #e8e5e0; }
+  .day-row { display: flex; align-items: stretch; margin-bottom: 6px; border-radius: 6px; overflow: hidden; background: #f0eeeb; }
+  .day-row.today { outline: 2px solid #8a7a60; outline-offset: 1px; }
+  .day-label { width: 90px; min-width: 90px; padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; background: #e8e5e0; font-size: 0.78em; }
+  .day-label .dow { font-weight: 600; font-size: 1.05em; color: #5a4a30; }
+  .day-label .date { color: #999; font-size: 0.85em; }
+  .timeline { flex: 1; display: flex; position: relative; min-height: 44px; }
+  .block { display: flex; align-items: center; justify-content: center; font-size: 0.65em; font-weight: 500; letter-spacing: 0.02em; color: rgba(255,255,255,0.95); position: relative; overflow: hidden; text-align: center; padding: 2px 4px; line-height: 1.2; cursor: default; transition: filter 0.15s; }
+  .block:hover { filter: brightness(1.2); }
+  .block .time-label { position: absolute; bottom: 2px; left: 4px; font-size: 0.85em; opacity: 0.5; font-weight: 400; }
+  .block .time-label-end { position: absolute; bottom: 2px; right: 4px; font-size: 0.85em; opacity: 0.5; font-weight: 400; }
+  .b-sleep { background: #c5bfb5; color: #888; }
+  .b-grog { background: #c9b99a; color: #fff; }
+  .b-work { background: #3a8a9a; color: #fff; }
+  .b-busy { background: #8a7a60; color: #fff; }
+  .b-rest { background: #d8d0c0; color: #8a7a60; }
+  .hour-markers { display: flex; justify-content: space-between; padding: 0 0 4px 90px; margin-bottom: 2px; }
+  .hour-markers span { font-size: 0.6em; color: #bbb; width: 0; text-align: center; }
+  .now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: #e84040; z-index: 10; pointer-events: none; }
+  .now-dot { position: absolute; top: -3px; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: #e84040; }
+  .dual-timeline { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .timeline-layer { display: flex; position: relative; min-height: 20px; height: 20px; }
+  .row-label-tag { position: absolute; left: 4px; top: 2px; font-size: 0.55em; font-weight: 600; color: #8a7a60; z-index: 5; letter-spacing: 0.05em; }
+  .status-banner { text-align: center; padding: 14px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 0.9em; font-weight: 400; }
+  .status-banner.available { background: #e8f5e8; color: #3a7a3a; border: 1px solid #c0e0c0; }
+  .status-banner.busy-work { background: #e0f2f5; color: #2a7a8a; border: 1px solid #b0d8e0; }
+  .status-banner.busy { background: #efeae0; color: #6a5a40; border: 1px solid #d8d0c0; }
+  .status-banner.sleeping { background: #edebe8; color: #999; border: 1px solid #ddd; }
+  .status-banner.waking { background: #f5f0e0; color: #8a7a50; border: 1px solid #e0d8c0; }
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .day-label { width: 60px; min-width: 60px; padding: 8px; }
+    .day-label .dow { font-size: 0.9em; }
+    .block { font-size: 0.55em; }
+    .legend { font-size: 0.7em; gap: 10px; }
+    header h1 { font-size: 1.3em; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🥖 Calendario Panifica</h1>
+    <p id="subtitle"></p>
+  </header>
+  <div id="status-banner" class="status-banner available"></div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#3a8a9a"></div>Trabajo Panifica (disponible)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8a7a60"></div>Otros trabajos (no disponible)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c9b99a"></div>Despertar</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c5bfb5"></div>Sueño</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d8d0c0"></div>Descanso</div>
+  </div>
+  <div class="hour-markers" id="hour-markers"></div>
+  <div id="calendar"></div>
+</div>
+<script>
+const DOW_NAMES = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+const MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const RANGE_START = 5*60+0, RANGE_END = 23*60, RANGE_TOTAL = RANGE_END - RANGE_START;
+
+function m(h,i){return h*60+i}
+function fmt(h,i){return String(h).padStart(2,'0')+':'+String(i||0).padStart(2,'0')}
+function fmtM(n){return fmt(Math.floor(n/60),n%60)}
+function B(s,e,c,l,t){return{start:s,end:e,cls:'b-'+c,label:l||'',time:!!t}}
+
+// ============================================================
+// ALL DAY DATA — keyed by YYYY-MM-DD
+// Reglas:
+//   - Sueño = 7.5h antes de despertar (450 min)
+//   - Despertar (grog) = 90 min si wake >= 06:00, si no 45 min
+//   - Descanso pre-sueño = 90 min antes de iniciar sueño PM
+//   - Trabajo Panifica: L-V 6h, S-D 4h (excepto 24 y 30 may = descanso)
+// ============================================================
+// Helper: build full day given today's wake and tomorrow's wake.
+function day(wTd, wTm, workDur) {
+  var w=wTd, g=w + (w>=m(6,0)?90:45);
+  var sleepPm = wTm + 1440 - 450; // tomorrow's wake (offset by 1440) minus 7.5h
+  var descansoStart = sleepPm - 90;
+  var blocks = [B(RANGE_START,w,'sleep','💤'), B(w,g,'grog','Despertar')];
+  if (workDur > 0) {
+    var we = g + workDur;
+    blocks.push(B(g, we, 'work', (workDur===360?'06H':'04H')+' Panifica', 1));
+    blocks.push(B(we, descansoStart, 'busy', 'Otros trabajos', 1));
+  } else {
+    blocks.push(B(g, descansoStart, 'rest', 'Descanso', 1));
+  }
+  blocks.push(B(descansoStart, sleepPm, 'rest', 'Descanso', 1));
+  blocks.push(B(sleepPm, RANGE_END+1440, 'sleep', '💤'));
+  return blocks;
+}
+const DAYS = {
+  // --- Transición (14-19 may, shift -25 min/día) ---
+  '2026-05-14': { wake:m(7,46), plan: day(m(7,46),  m(7,21), 360), actual:null },
+  '2026-05-15': { wake:m(7,21), plan: day(m(7,21),  m(6,56), 360), actual:null },
+  '2026-05-16': { wake:m(6,56), plan: day(m(6,56),  m(6,31), 240), actual:null },
+  '2026-05-17': { wake:m(6,31), plan: day(m(6,31),  m(6,6),  240), actual:null },
+  '2026-05-18': { wake:m(6,6),  plan: day(m(6,6),   m(5,41), 360), actual:null },
+  '2026-05-19': { wake:m(5,41), plan: day(m(5,41),  m(5,16), 360), actual:null },
+  '2026-05-20': { wake:m(5,16), plan: day(m(5,16),  m(5,15), 360), actual:null },
+  // --- Estable (21-31 may, wake 05:15) ---
+  '2026-05-21': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-22': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-23': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 240), actual:null },
+  '2026-05-24': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 0),   actual:null }, // DESCANSO
+  '2026-05-25': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-26': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-27': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-28': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-29': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  '2026-05-30': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 0),   actual:null }, // DESCANSO
+  '2026-05-31': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 240), actual:null },
+};
+
+// ============================================================
+// DATE UTILITIES
+// ============================================================
+function parseDate(s){var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2])}
+function dateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+function weekStart(d){var r=new Date(d);r.setDate(r.getDate()-r.getDay());return r}
+
+function categorize(dateObj, today, isFuture) {
+  var todayWS = weekStart(today), dateWS = weekStart(dateObj);
+  if (sameDay(dateObj, today)) return 'hoy';
+  if (isFuture) {
+    if (sameDay(dateWS, todayWS)) return 'esta semana';
+    var nws = new Date(todayWS); nws.setDate(nws.getDate()+7);
+    if (sameDay(dateWS, nws)) return 'próxima semana';
+    if (dateObj.getMonth()===today.getMonth()&&dateObj.getFullYear()===today.getFullYear()) return 'este mes';
+    var nm=today.getMonth()+1, ny=nm>11?today.getFullYear()+1:today.getFullYear();
+    if (dateObj.getMonth()===(nm%12)&&dateObj.getFullYear()===ny) return 'próximo mes';
+    if (dateObj.getFullYear()===today.getFullYear()) return 'este año';
+    return 'próximo año';
+  } else {
+    if (sameDay(dateWS, todayWS)) return 'esta semana';
+    var pws = new Date(todayWS); pws.setDate(pws.getDate()-7);
+    if (sameDay(dateWS, pws)) return 'semana pasada';
+    if (dateObj.getMonth()===today.getMonth()&&dateObj.getFullYear()===today.getFullYear()) return 'este mes';
+    var pm=today.getMonth()-1, py=pm<0?today.getFullYear()-1:today.getFullYear();
+    if (dateObj.getMonth()===((pm+12)%12)&&dateObj.getFullYear()===py) return 'mes pasado';
+    if (dateObj.getFullYear()===today.getFullYear()) return 'este año';
+    return 'año pasado';
+  }
+}
+
+var FUTURE_ORDER = ['hoy','esta semana','próxima semana','este mes','próximo mes','este año','próximo año'];
+var PAST_ORDER = ['esta semana','semana pasada','este mes','mes pasado','este año','año pasado'];
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  var cal = document.getElementById('calendar');
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var todayS = dateStr(today);
+  var nowMins = now.getHours()*60+now.getMinutes();
+
+  document.getElementById('subtitle').textContent =
+    MONTH_NAMES[today.getMonth()].charAt(0).toUpperCase()+MONTH_NAMES[today.getMonth()].slice(1)+' '+today.getFullYear();
+
+  var hm = document.getElementById('hour-markers'), hmH='';
+  for(var h=5;h<=23;h++) hmH+='<span>'+h+':00</span>';
+  hm.innerHTML=hmH;
+
+  var allDates = Object.keys(DAYS).sort();
+  var todayDays=[], futureDays=[], pastDays=[];
+  for(var i=0;i<allDates.length;i++){
+    var ds=allDates[i], d=parseDate(ds);
+    if(sameDay(d,today)) todayDays.push(ds);
+    else if(d>today) futureDays.push(ds);
+    else pastDays.push(ds);
+  }
+  pastDays.reverse();
+
+  function renderTimeline(blocks, isToday) {
+    var out='';
+    for(var i=0;i<blocks.length;i++){
+      var b=blocks[i];
+      var cs=Math.max(b.start,RANGE_START), ce=Math.min(b.end,RANGE_END);
+      if(ce<=cs) continue;
+      var left=((cs-RANGE_START)/RANGE_TOTAL)*100;
+      var width=((ce-cs)/RANGE_TOTAL)*100;
+      var minW=b.cls==='b-sleep'?Math.max(width,7):Math.max(width,5);
+      var displayLabel=b.label;
+      if(b.cls==='b-grog'&&b.start>0) displayLabel='⏰ '+fmtM(b.start);
+      var timeStr=b.time?'<span class="time-label">'+fmtM(cs)+'</span><span class="time-label-end">'+fmtM(ce)+'</span>':'';
+      out+='<div class="block '+b.cls+'" style="position:absolute;left:'+left+'%;width:'+minW+'%;height:100%" title="'+b.label+': '+fmtM(cs)+' - '+fmtM(ce)+'">'+(minW>5?displayLabel:'')+(minW>12?timeStr:'')+'</div>';
+    }
+    if(isToday&&nowMins>=RANGE_START&&nowMins<=RANGE_END){
+      var nl=((nowMins-RANGE_START)/RANGE_TOTAL)*100;
+      out+='<div class="now-line" style="left:'+nl+'%"><div class="now-dot"></div></div>';
+    }
+    return out;
+  }
+
+  function renderDay(ds, isToday) {
+    var d=parseDate(ds), day=DAYS[ds];
+    var dow=DOW_NAMES[d.getDay()];
+    var dateLabel=d.getDate()+' '+MONTH_NAMES[d.getMonth()].slice(0,3);
+    var h='';
+    if(day.actual){
+      h+='<div class="day-row'+(isToday?' today':'')+'"><div class="day-label"><span class="dow">'+dow+'</span><span class="date">'+dateLabel+'</span></div><div class="dual-timeline"><div class="timeline-layer"><span class="row-label-tag">REAL</span>'+renderTimeline(day.actual,isToday)+'</div><div class="timeline-layer"><span class="row-label-tag">PLAN</span>'+renderTimeline(day.plan,false)+'</div></div></div>';
+    } else {
+      h+='<div class="day-row'+(isToday?' today':'')+'"><div class="day-label"><span class="dow">'+dow+'</span><span class="date">'+dateLabel+'</span></div><div class="timeline">'+renderTimeline(day.plan,isToday)+'</div></div>';
+    }
+    return h;
+  }
+
+  function renderGrouped(days, isFuture) {
+    var order=isFuture?FUTURE_ORDER:PAST_ORDER;
+    var groups={};
+    for(var i=0;i<days.length;i++){
+      var ds=days[i], cat=categorize(parseDate(ds),today,isFuture);
+      if(!groups[cat]) groups[cat]=[];
+      groups[cat].push(ds);
+    }
+    var h='';
+    for(var j=0;j<order.length;j++){
+      var cat=order[j];
+      if(!groups[cat]||groups[cat].length===0) continue;
+      h+='<div class="week-label">'+cat.charAt(0).toUpperCase()+cat.slice(1)+'</div>';
+      for(var k=0;k<groups[cat].length;k++) h+=renderDay(groups[cat][k],false);
+    }
+    return h;
+  }
+
+  var html='';
+  if(todayDays.length){ html+='<div class="week-label">Hoy</div>'; for(var t=0;t<todayDays.length;t++) html+=renderDay(todayDays[t],true); }
+  if(futureDays.length) html+=renderGrouped(futureDays,true);
+  if(pastDays.length) html+=renderGrouped(pastDays,false);
+  cal.innerHTML=html;
+
+  // Status banner
+  var banner=document.getElementById('status-banner');
+  var todayData=DAYS[todayS];
+  if(!todayData){ banner.className='status-banner sleeping'; banner.textContent='Sin datos para hoy'; return; }
+  var blocks=todayData.actual||todayData.plan;
+  var current=null;
+  for(var i=0;i<blocks.length;i++){
+    if(nowMins>=blocks[i].start&&nowMins<blocks[i].end){ current=blocks[i]; break; }
+  }
+  if(!current){ banner.className='status-banner sleeping'; banner.textContent='Fuera de horario activo'; return; }
+  if(current.cls==='b-sleep'){ banner.className='status-banner sleeping'; banner.textContent='💤 Durmiendo'; }
+  else if(current.cls==='b-grog'){ banner.className='status-banner waking'; banner.textContent='Despertando'; }
+  else if(current.cls==='b-work'){ banner.className='status-banner available'; banner.textContent='🥖 '+(current.label||'Panifica')+' — DISPONIBLE'; }
+  else if(current.cls==='b-busy'){ banner.className='status-banner busy'; banner.textContent='Otros trabajos — no disponible'; }
+  else if(current.cls==='b-rest'){ banner.className='status-banner sleeping'; banner.textContent='Día de descanso — no disponible'; }
+  else { banner.className='status-banner available'; banner.textContent=current.label||'Disponible'; }
+}
+
+render();
+setInterval(render, 60000);
+</script>
+</body>
+</html>
