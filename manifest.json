@@ -1,0 +1,16 @@
+{
+  "name": "Calendario Panifica",
+  "short_name": "Calendario Panifica",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#8a7a60",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
