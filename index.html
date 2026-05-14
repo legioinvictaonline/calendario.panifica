@@ -260,7 +260,7 @@ function render() {
   // Status banner
   var banner=document.getElementById('status-banner');
   var todayData=DAYS[todayS];
-  if(!todayData){ banner.className='status-banner sleeping'; banner.textContent='Sin datos para hoy'; return; }
+  if(!todayData){ banner.className='status-banner sleeping'; banner.innerHTML='📋 No hay programación para hoy'; return; }
   var blocks=todayData.actual||todayData.plan;
   var current=null;
   for(var i=0;i<blocks.length;i++){
