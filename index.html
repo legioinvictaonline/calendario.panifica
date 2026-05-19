@@ -121,11 +121,11 @@ const DAYS = {
   '2026-05-16': { wake:m(6,56), plan: day(m(6,56),  m(6,31), 240), actual:null },
   '2026-05-17': { wake:m(6,31), plan: day(m(6,31),  m(6,6),  240), actual:null },
   '2026-05-18': { wake:m(6,6),  plan: day(m(6,6),   m(5,41), 360), actual:null },
-  // 19-may: bloques invertidos — Otros AM, Panifica PM (16:00-22:00), sleep corrido
-  '2026-05-19': { wake:m(5,41), plan: [
-    B(RANGE_START, m(5,41), 'sleep', '💤'),
-    B(m(5,41), m(6,26), 'grog', 'Despertar'),
-    B(m(6,26), m(16,0), 'busy', 'Otros trabajos', 1),
+  // 19-may: bloques invertidos — Otros AM, Panifica PM (16:00-22:00), sleep corrido. Wake real: 06:38. Despertar = Grogginess del Day Planner (0638-0849).
+  '2026-05-19': { wake:m(6,38), plan: [
+    B(RANGE_START, m(6,38), 'sleep', '💤'),
+    B(m(6,38), m(8,49), 'grog', 'Despertar'),
+    B(m(8,49), m(16,0), 'busy', 'Otros trabajos', 1),
     B(m(16,0), m(22,0), 'work', '06H Panifica', 1),
     B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
     B(m(23,30), RANGE_END+1440, 'sleep', '💤')
