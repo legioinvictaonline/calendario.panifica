@@ -130,7 +130,15 @@ const DAYS = {
     B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
     B(m(23,30), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
-  '2026-05-20': { wake:m(5,16), plan: day(m(5,16),  m(5,15), 360), actual:null },
+  // 20-may: bloques invertidos — Otros AM, Panifica PM (16:00-22:00), sleep corrido
+  '2026-05-20': { wake:m(5,16), plan: [
+    B(RANGE_START, m(5,16), 'sleep', '💤'),
+    B(m(5,16), m(6,1), 'grog', 'Despertar'),
+    B(m(6,1), m(16,0), 'busy', 'Otros trabajos', 1),
+    B(m(16,0), m(22,0), 'work', '06H Panifica', 1),
+    B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
+    B(m(23,30), RANGE_END+1440, 'sleep', '💤')
+  ], actual:null },
   // --- Estable (21-31 may, wake 05:15) ---
   '2026-05-21': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
   '2026-05-22': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
