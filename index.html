@@ -139,8 +139,16 @@ const DAYS = {
     B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
     B(m(23,30), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
-  // --- Estable (21-31 may, wake 05:15) ---
-  '2026-05-21': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
+  // 21-may: bloques invertidos — Otros AM, Panifica PM (16:00-22:00), sleep corrido. Wake proyectado: 06:44. Despertar = Grogginess del Day Planner (0644-0814).
+  '2026-05-21': { wake:m(6,44), plan: [
+    B(RANGE_START, m(6,44), 'sleep', '💤'),
+    B(m(6,44), m(8,14), 'grog', 'Despertar'),
+    B(m(8,14), m(16,0), 'busy', 'Otros trabajos', 1),
+    B(m(16,0), m(22,0), 'work', '06H Panifica', 1),
+    B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
+    B(m(23,30), RANGE_END+1440, 'sleep', '💤')
+  ], actual:null },
+  // --- Estable (22-31 may, wake 05:15) ---
   '2026-05-22': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
   '2026-05-23': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 240), actual:null },
   '2026-05-24': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 0),   actual:null }, // DESCANSO
