@@ -139,14 +139,17 @@ const DAYS = {
     B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
     B(m(23,30), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
-  // 21-may: bloques invertidos — Otros AM, Panifica PM (16:00-22:00), sleep corrido. Wake proyectado: 06:44. Despertar = Grogginess del Day Planner (0644-0814).
-  '2026-05-21': { wake:m(6,44), plan: [
-    B(RANGE_START, m(6,44), 'sleep', '💤'),
-    B(m(6,44), m(8,14), 'grog', 'Despertar'),
-    B(m(8,14), m(16,0), 'busy', 'Otros trabajos', 1),
-    B(m(16,0), m(22,0), 'work', '06H Panifica', 1),
-    B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
-    B(m(23,30), RANGE_END+1440, 'sleep', '💤')
+  // 21-may: real wake 08:00 (5h de sueño). Otros AM + comida/siesta 14-16 + Otros PM hasta 8h totales. Panifica 19:30-21:58.
+  '2026-05-21': { wake:m(8,0), plan: [
+    B(RANGE_START, m(8,0), 'sleep', '💤'),
+    B(m(8,0), m(9,30), 'grog', 'Despertar'),
+    B(m(9,30), m(14,0), 'busy', 'Otros trabajos', 1),
+    B(m(14,0), m(16,0), 'rest', 'Comida', 1),
+    B(m(16,0), m(19,30), 'busy', 'Otros trabajos', 1),
+    B(m(19,30), m(21,58), 'work', '2.5H Panifica', 1),
+    B(m(21,58), m(22,53), 'rest', 'Wind-down', 1),
+    B(m(22,53), m(23,53), 'rest', 'Melatonin', 1),
+    B(m(23,53), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
   // --- Estable (22-31 may, wake 05:15) ---
   '2026-05-22': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
