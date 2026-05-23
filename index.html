@@ -159,14 +159,18 @@ const DAYS = {
     B(m(21,30), m(23,0), 'rest', 'Descanso', 1),
     B(m(23,0), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
-  // 23-may sábado: wake 05:05, Despertar 1h30, 1H Otros, 1H Panifica, Otros hasta 10:30, Descanso resto del día, sleep.
+  // 23-may sábado: wake 05:05, Despertar 1h30, 1H Otros, 1H Panifica AM, Otros hasta 11:00, Comida 14-16, 2H Panifica PM 18-20.
   '2026-05-23': { wake:m(5,5), plan: [
     B(RANGE_START, m(5,5), 'sleep', '💤'),
     B(m(5,5), m(6,35), 'grog', 'Despertar'),
     B(m(6,35), m(7,35), 'busy', 'Otros trabajos', 1),
     B(m(7,35), m(8,35), 'work', '1H Panifica', 1),
-    B(m(8,35), m(10,30), 'busy', 'Otros trabajos', 1),
-    B(m(10,30), m(21,45), 'rest', 'Descanso', 1),
+    B(m(8,35), m(11,0), 'busy', 'Otros trabajos', 1),
+    B(m(11,0), m(14,0), 'rest', 'Descanso', 1),
+    B(m(14,0), m(16,0), 'rest', 'Comida', 1),
+    B(m(16,0), m(18,0), 'rest', 'Descanso', 1),
+    B(m(18,0), m(20,0), 'work', '2H Panifica', 1),
+    B(m(20,0), m(21,45), 'rest', 'Descanso', 1),
     B(m(21,45), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
   // --- Estable (24-31 may, wake 05:15) ---
