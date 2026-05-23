@@ -139,21 +139,37 @@ const DAYS = {
     B(m(22,0), m(23,30), 'rest', 'Descanso', 1),
     B(m(23,30), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
-  // 21-may: real wake 08:00 (5h de sueño). Otros AM + comida/siesta 14-16 + Otros PM hasta 8h totales. Panifica 19:30-21:58.
+  // 21-may: real — Panifica cancelada, Otros trabajos extendido hasta medianoche. Wind-down/Melatonin eliminados.
   '2026-05-21': { wake:m(8,0), plan: [
     B(RANGE_START, m(8,0), 'sleep', '💤'),
     B(m(8,0), m(9,30), 'grog', 'Despertar'),
     B(m(9,30), m(14,0), 'busy', 'Otros trabajos', 1),
     B(m(14,0), m(16,0), 'rest', 'Comida', 1),
-    B(m(16,0), m(19,30), 'busy', 'Otros trabajos', 1),
-    B(m(19,30), m(21,58), 'work', '2.5H Panifica', 1),
-    B(m(21,58), m(22,53), 'rest', 'Wind-down', 1),
-    B(m(22,53), m(23,53), 'rest', 'Melatonin', 1),
-    B(m(23,53), RANGE_END+1440, 'sleep', '💤')
+    B(m(16,0), m(24,0), 'busy', 'Otros trabajos', 1),
+    B(m(24,0), RANGE_END+1440, 'sleep', '💤')
   ], actual:null },
-  // --- Estable (22-31 may, wake 05:15) ---
-  '2026-05-22': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
-  '2026-05-23': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 240), actual:null },
+  // 22-may: real — desvelo Otros 00:00-09:00, sleep 09:00-13:00, Despertar 1h30, Comida hasta 17:00, 1H Panifica, Otros hasta 21:30, Descanso, sleep.
+  '2026-05-22': { wake:m(13,0), plan: [
+    B(RANGE_START, m(9,0), 'busy', 'Otros trabajos', 1),
+    B(m(9,0), m(13,0), 'sleep', '💤'),
+    B(m(13,0), m(14,30), 'grog', 'Despertar'),
+    B(m(14,30), m(17,0), 'rest', 'Comida', 1),
+    B(m(17,0), m(18,0), 'work', '1H Panifica', 1),
+    B(m(18,0), m(21,30), 'busy', 'Otros trabajos', 1),
+    B(m(21,30), m(23,0), 'rest', 'Descanso', 1),
+    B(m(23,0), RANGE_END+1440, 'sleep', '💤')
+  ], actual:null },
+  // 23-may sábado: wake 05:05, Despertar 1h30, 1H Otros, 1H Panifica, Otros hasta 10:30, Descanso resto del día, sleep.
+  '2026-05-23': { wake:m(5,5), plan: [
+    B(RANGE_START, m(5,5), 'sleep', '💤'),
+    B(m(5,5), m(6,35), 'grog', 'Despertar'),
+    B(m(6,35), m(7,35), 'busy', 'Otros trabajos', 1),
+    B(m(7,35), m(8,35), 'work', '1H Panifica', 1),
+    B(m(8,35), m(10,30), 'busy', 'Otros trabajos', 1),
+    B(m(10,30), m(21,45), 'rest', 'Descanso', 1),
+    B(m(21,45), RANGE_END+1440, 'sleep', '💤')
+  ], actual:null },
+  // --- Estable (24-31 may, wake 05:15) ---
   '2026-05-24': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 0),   actual:null }, // DESCANSO
   '2026-05-25': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
   '2026-05-26': { wake:m(5,15), plan: day(m(5,15),  m(5,15), 360), actual:null },
